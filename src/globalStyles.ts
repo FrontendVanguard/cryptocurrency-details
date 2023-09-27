@@ -1,16 +1,21 @@
+import { grey, purple } from "@mui/material/colors";
 import { createGlobalStyle } from "styled-components";
-
-import { colors } from "./constants/colors";
 
 const GlobalStyle = createGlobalStyle`
 
    body {
     margin: 0;
-    background-color: ${colors.DARK_LIGHT_400};
-    color: ${colors.GRAY_100};
-    font-family: Roboto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+
+    background-color: ${grey[100]};
+    color: ${grey[900]};
+    font-family: 'Roboto', sans-serif;
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
   }
 `;
 
