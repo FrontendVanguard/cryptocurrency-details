@@ -10,26 +10,34 @@ import { coinsColumns } from "./columns";
 import { Container } from "./CoinsList.styles";
 import { TextField } from "@mui/material";
 import { useQuery } from "react-query";
+import { filterDataByName } from "../../utils/requests";
 
 export const CoinsList = () => {
   const [error, setError] = useState<false | string>(false);
 
-  const [coinsData, setCoinsData] = useState<Coin[]>([]);
+  const [coinsData, setCoinsData] = useState<Coin[] | null>(null);
+  const [filteredCoins, setFilteredCoins] = useState<Coin[] | null>(null);
   const [pagination, setPagination] = useState({ page: 0, pageSize: 5 });
 
+  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const navigate = useNavigate();
 
-  // const handleClick = () => {
-  //   navigate(`/${id}`);
-  // };
+  const handleRowClick = (param: any) => {
+    navigate(`/coin/${param.row.id}`);
+  };
 
   const coinsListQuery = useQuery(["coin"], () => getCoins(), {
     enabled: true,
+    cacheTime: 10000,
+    refetchInterval: 30000,
     onSuccess: (response: { data: Coin[] }) => {
       console.log("response", response);
       setCoinsData(response.data);
+      setFilteredCoins(response.data);
     },
     onError: (error) => {
       console.error("Error fetching data:", error);
@@ -38,29 +46,40 @@ export const CoinsList = () => {
   });
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      coinsListQuery.refetch();
-    }, 15000);
+    if (!coinsData) return;
 
-    return () => clearInterval(intervalId);
-  }, [coinsListQuery]);
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
+    const timer = setTimeout(() => {
+      // API don't have search filter by name, id, ect. I do it on my side
+      filterDataByName(coinsData, searchQuery).then((result) => {
+        setFilteredCoins(result);
+      });
+    }, 500);
+
+    setDebounceTimer(timer);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchQuery, coinsData]);
 
   return (
     <Container>
       <TextField
-        label="Search by name or symbol"
+        label="Search by name"
         variant="outlined"
         className="search_input"
         value={searchQuery}
-        onChange={handleSearchChange}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setSearchQuery(e.target.value);
+        }}
       />
 
       <DataGrid
-        rows={coinsData?.length > 0 ? coinsData : []}
+        rows={filteredCoins ? filteredCoins : []}
         columns={coinsColumns}
         initialState={{
           pagination: {
@@ -71,6 +90,7 @@ export const CoinsList = () => {
           setPagination(params);
         }}
         pageSizeOptions={[5, 10, 25, 50, 100]}
+        onRowClick={handleRowClick}
       />
 
       <Snackbar

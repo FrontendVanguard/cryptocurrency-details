@@ -8,3 +8,11 @@ export const getCoins = async () => {
     },
   });
 };
+
+interface GetCoinsProps {
+  id: string;
+}
+
+export const getCoin = async ({ id }: GetCoinsProps) => {
+  return await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`, {});
+};

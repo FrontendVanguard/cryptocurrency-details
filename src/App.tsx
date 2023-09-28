@@ -13,7 +13,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<CoinsList />} />
-      <Route path="/:id" element={<Coin />} />
+      <Route path="/coin/:id" element={<Coin />} />
     </>
   )
 );
