@@ -3,7 +3,7 @@ import Snackbar from "@mui/material/Snackbar";
 import { DataGrid } from "@mui/x-data-grid";
 
 import { getCoins } from "../../api/coingecko";
-import { Coin } from "../../types";
+import { CoinType } from "../../types";
 import { useNavigate } from "react-router-dom";
 import { red } from "@mui/material/colors";
 import { coinsColumns } from "./columns";
@@ -15,8 +15,8 @@ import { filterDataByName } from "../../utils/requests";
 export const CoinsList = () => {
   const [error, setError] = useState<false | string>(false);
 
-  const [coinsData, setCoinsData] = useState<Coin[] | null>(null);
-  const [filteredCoins, setFilteredCoins] = useState<Coin[] | null>(null);
+  const [coinsData, setCoinsData] = useState<CoinType[] | null>(null);
+  const [filteredCoins, setFilteredCoins] = useState<CoinType[] | null>(null);
   const [pagination, setPagination] = useState({ page: 0, pageSize: 5 });
 
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
@@ -26,21 +26,22 @@ export const CoinsList = () => {
 
   const navigate = useNavigate();
 
-  const handleRowClick = (param: any) => {
+  const handleRowClick = (param: { row: CoinType }) => {
     navigate(`/coin/${param.row.id}`);
   };
 
-  const coinsListQuery = useQuery(["coin"], () => getCoins(), {
+  const coinsListQuery = useQuery(["coinsList"], () => getCoins(), {
     enabled: true,
     cacheTime: 10000,
     refetchInterval: 30000,
-    onSuccess: (response: { data: Coin[] }) => {
+    onSuccess: (response: { data: CoinType[] }) => {
       console.log("response", response);
       setCoinsData(response.data);
       setFilteredCoins(response.data);
     },
     onError: (error) => {
       console.error("Error fetching data:", error);
+
       if (error instanceof Error) setError(error.message);
     },
   });
@@ -69,6 +70,7 @@ export const CoinsList = () => {
   return (
     <Container>
       <TextField
+        data-testid="search-coin-input"
         label="Search by name"
         variant="outlined"
         className="search_input"
@@ -79,6 +81,7 @@ export const CoinsList = () => {
       />
 
       <DataGrid
+        data-testid="coins-datagrid"
         rows={filteredCoins ? filteredCoins : []}
         columns={coinsColumns}
         initialState={{

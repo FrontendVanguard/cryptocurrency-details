@@ -1,9 +1,9 @@
-import { Coin } from "../types";
+import { CoinType } from "../types";
 
 export const filterDataByName = (
-  data: Coin[],
+  data: CoinType[],
   str: string
-): Promise<Coin[]> => {
+): Promise<CoinType[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const filteredData = data.filter((el) =>

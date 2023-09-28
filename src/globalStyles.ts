@@ -16,6 +16,9 @@ const GlobalStyle = createGlobalStyle`
       flex-direction: column;
       align-items: center;
     }
+    .MuiDataGrid-row {
+      cursor: pointer;
+    }
   }
 `;
 

@@ -1,4 +1,4 @@
-export type Coin = {
+export type CoinType = {
   id: string;
   symbol: string;
   name: string;
@@ -6,3 +6,15 @@ export type Coin = {
   market_cap: number;
   market_cap_rank: number;
 };
+
+export interface CoinDetailsType extends CoinType {
+  watchlist_portfolio_users: number;
+  liquidity_score: number;
+  description: { en: string };
+  categories: string[];
+  image: {
+    small: string;
+    large: string;
+    thumb: string;
+  };
+}

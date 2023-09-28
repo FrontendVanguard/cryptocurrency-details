@@ -10,9 +10,10 @@ export const getCoins = async () => {
 };
 
 interface GetCoinsProps {
-  id: string;
+  id: string | undefined;
 }
 
 export const getCoin = async ({ id }: GetCoinsProps) => {
+  if (!id) return;
   return await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`, {});
 };
